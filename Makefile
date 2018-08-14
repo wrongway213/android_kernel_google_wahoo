@@ -661,10 +661,6 @@ ifdef CONFIG_CC_WERROR
 KBUILD_CFLAGS	+= -Werror
 endif
 
-KBUILD_CFLAGS	+= -Wno-attribute-alias
-KBUILD_CFLAGS	+= -Wno-packed-not-aligned
-KBUILD_CFLAGS	+= -Wno-stringop-truncation
-
 # Tell gcc to never replace conditional load with a non-conditional one
 KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)
 
