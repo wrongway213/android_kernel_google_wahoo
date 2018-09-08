@@ -13,6 +13,8 @@
 
 #define pr_fmt(fmt) "simple_lmk: " fmt
 
+#include <linux/cpu_input_boost.h>
+#include <linux/devfreq_boost.h>
 #include <linux/mm.h>
 #include <linux/moduleparam.h>
 #include <linux/oom.h>
@@ -21,6 +23,9 @@
 
 /* Free at least 32 MiB per memory reclaim event */
 #define MIN_FREE_PAGES (32UL * SZ_1M / PAGE_SIZE)
+
+/* Duration to boost CPU and DDR bus to the max per low memory event */
+#define BOOST_DURATION_MS (100)
 
 /* Pulled from the Android framework */
 static const short int adj_prio[] = {
@@ -118,6 +123,8 @@ void simple_lmk_mem_reclaim(void)
 		return;
 
 	last_reclaim_expires = jiffies + LMK_KILL_TIMEOUT;
+	cpu_input_boost_kick_max(BOOST_DURATION_MS);
+	devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, BOOST_DURATION_MS);
 	do_lmk_reclaim(MIN_FREE_PAGES);
 	spin_unlock(&reclaim_lock);
 }
